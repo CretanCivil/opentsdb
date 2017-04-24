@@ -155,8 +155,12 @@ public class QueryExecutor {
       sub.setMetric(mq.getMetric());
 
       if (timespan.getDownsampler() != null) {
-        sub.setDownsample(timespan.getDownsampler().getInterval() + "-" + 
+       /* sub.setDownsample(timespan.getDownsampler().getInterval() + "-" + 
             timespan.getDownsampler().getAggregator());
+            */
+    	  //上面是原始的 下面是我修改的 2-28 当不同的agg进行运算时候有问题
+    	  sub.setDownsample(timespan.getDownsampler().getInterval() + "-" + 
+    			  (mq.getAggregator() != null ? mq.getAggregator() : timespan.getDownsampler().getAggregator()));
       }
 
       // filters

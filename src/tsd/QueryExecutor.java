@@ -159,8 +159,13 @@ public class QueryExecutor {
             timespan.getDownsampler().getAggregator());
             */
     	  //上面是原始的 下面是我修改的 2-28 当不同的agg进行运算时候有问题
-    	  sub.setDownsample(timespan.getDownsampler().getInterval() + "-" + 
-    			  (mq.getAggregator() != null ? mq.getAggregator() : timespan.getDownsampler().getAggregator()));
+    	  String  sample = timespan.getDownsampler().getInterval() + "-" + 
+    			  (mq.getAggregator() != null ? mq.getAggregator() : timespan.getDownsampler().getAggregator());
+    	  if(timespan.getDownsampler().getFillPolicy() != null) {
+    		  sample  = sample + "-" + timespan.getDownsampler().getFillPolicy().getPolicy().getName();
+    	  }
+    	  
+    	  sub.setDownsample(sample);
       }
 
       // filters
@@ -702,7 +707,13 @@ public class QueryExecutor {
             ++count;
           }
           for (int i = 0; i < dps.length; i++) {
-            json.writeNumber(dps[i].toDouble());
+            //json.writeNumber(dps[i].toDouble());
+          	// 4.26 for 叶良辰
+            if(Double.isNaN(dps[i].toDouble())) {
+          	  json.writeNull();
+            } else {
+          	  json.writeNumber(dps[i].toDouble());
+            }
           }
           
           json.writeEndArray();
@@ -795,7 +806,13 @@ public class QueryExecutor {
           ++count;
         }
         for (int i = 0; i < dps.length; i++) {
-          json.writeNumber(dps[i].toDouble());
+        	//json.writeNumber(dps[i].toDouble());
+        	// 4.26 for 叶良辰
+          if(Double.isNaN(dps[i].toDouble())) {
+        	  json.writeNull();
+          } else {
+        	  json.writeNumber(dps[i].toDouble());
+          }
         }
         
         json.writeEndArray();

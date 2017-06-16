@@ -155,8 +155,18 @@ public class QueryExecutor {
       sub.setMetric(mq.getMetric());
 
       if (timespan.getDownsampler() != null) {
+    	  /*
     	  sub.setDownsample(timespan.getDownsampler().getInterval() + "-" + 
             timespan.getDownsampler().getAggregator());
+            */
+    	  //上面是原始的 下面是我修改的 让exp支持填充
+    	  String  sample = timespan.getDownsampler().getInterval() + "-" + 
+    			  timespan.getDownsampler().getAggregator();
+    	  if(timespan.getDownsampler().getFillPolicy() != null) {
+    		  sample  = sample + "-" + timespan.getDownsampler().getFillPolicy().getPolicy().getName();
+    	  }
+    	  
+    	  sub.setDownsample(sample);
       }
 
       // filters

@@ -15,6 +15,7 @@ package net.opentsdb.graph;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -286,8 +287,12 @@ public final class Plot {
       if (fgcolor != null) {
         gp.append(' ').append(fgcolor);
       }
-
+      
+      
+      URL url = Plot.class.getClassLoader().getResource("msyh.ttc");
+    
       gp.append("\n"
+    		  + "set term png  font '"+url.getPath()+",8'\n"
                 + "set xdata time\n"
                 + "set timefmt \"%s\"\n"
                 + "if (GPVAL_VERSION < 4.6) set xtics rotate; else set xtics rotate right\n"

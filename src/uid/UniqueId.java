@@ -66,7 +66,7 @@ public final class UniqueId implements UniqueIdInterface {
   }
   
   /** Charset used to convert Strings to byte arrays and back. */
-  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+  private static final Charset CHARSET = Charset.forName("UTF-8");//ISO-8859-1
   /** The single column family used by this class. */
   private static final byte[] ID_FAMILY = toBytes("id");
   /** The single column family used by this class. */
@@ -309,7 +309,7 @@ public final class UniqueId implements UniqueIdInterface {
   }
 
   private String getNameFromCache(final byte[] id) {
-    return id_cache.get(fromBytes(id));
+    return id_cache.get(fromBytesForId(id));
   }
 
   private Deferred<String> getNameFromHBase(final byte[] id) {
@@ -322,7 +322,7 @@ public final class UniqueId implements UniqueIdInterface {
   }
 
   private void addNameToCache(final byte[] id, final String name) {
-    final String key = fromBytes(id);
+    final String key = fromBytesForId(id);
     String found = id_cache.get(key);
     if (found == null) {
       found = id_cache.putIfAbsent(key, name);
@@ -1042,7 +1042,7 @@ public final class UniqueId implements UniqueIdInterface {
 
     // Update cache.
     addIdToCache(newname, row);            // add     new name -> ID
-    id_cache.put(fromBytes(row), newname);  // update  ID -> new name
+    id_cache.put(fromBytesForId(row), newname);  // update  ID -> new name
     name_cache.remove(oldname);             // remove  old name -> ID
 
     // Delete the old forward mapping.
@@ -1104,7 +1104,7 @@ public final class UniqueId implements UniqueIdInterface {
       @Override
       public Object call(final Exception ex) throws Exception {
         name_cache.remove(name);
-        id_cache.remove(fromBytes(uid));
+        id_cache.remove(fromBytesForId(uid));
         LOG.error("Failed to delete " + fromBytes(kind) + " UID " + name 
             + " but still cleared the cache", ex);
         return ex;
@@ -1117,7 +1117,7 @@ public final class UniqueId implements UniqueIdInterface {
       public Deferred<Object> call(final ArrayList<Object> response) 
           throws Exception {
         name_cache.remove(name);
-        id_cache.remove(fromBytes(uid));
+        id_cache.remove(fromBytesForId(uid));
         LOG.info("Successfully deleted " + fromBytes(kind) + " UID " + name);
         return Deferred.fromResult(null);
       }
@@ -1267,6 +1267,10 @@ public final class UniqueId implements UniqueIdInterface {
     return new String(b, CHARSET);
   }
 
+  private static String fromBytesForId(final byte[] b) {
+	    return new String(b, Charset.forName("ISO-8859-1"));
+  }
+  
   /** Returns a human readable string representation of the object. */
   public String toString() {
     return "UniqueId(" + fromBytes(table) + ", " + kind() + ", " + id_width + ")";
